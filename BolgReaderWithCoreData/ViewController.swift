@@ -19,19 +19,42 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         saveDataInCoreData()
+        
+        fetchDataFromCoreData()
     }
     
     private func saveDataInCoreData() {
         let newUser = NSEntityDescription.insertNewObject(forEntityName: "Users", into: context)
-        newUser.setValue("Chaman", forKey: "username")
+        newUser.setValue("Abhijeet", forKey: "username")
         newUser.setValue("12345", forKey: "password")
-        newUser.setValue(25, forKey: "age")
+        newUser.setValue(1, forKey: "age")
         
         do {
             try context.save()
             print("Saved")
         } catch  {
             print("Error in saving data in core data")
+        }
+    }
+    
+    private func fetchDataFromCoreData() {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Users")
+        request.returnsObjectsAsFaults = false
+        
+        do {
+            let results =  try context.fetch(request)
+            
+            if !results.isEmpty {
+                for result in results as! [NSManagedObject] {
+                    let userName = result.value(forKey: "username") as? String
+                    print(userName ?? "No userName found for the key")
+                }
+            } else {
+                print("No saved result found in Core Data")
+            }
+            
+        } catch  {
+            print("Error occurred when fetching data from Core Data")
         }
     }
     
